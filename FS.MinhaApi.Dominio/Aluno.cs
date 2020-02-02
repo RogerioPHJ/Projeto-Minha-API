@@ -9,8 +9,8 @@ namespace FS.MinhaApi.Dominio
     public class Aluno
     {
         public int Id{ get; set; }
-        public int Nome { get; set; }
-        public int Endereco { get; set; }
+        public string Nome { get; set; }
+        public string Endereco { get; set; }
         public decimal Mensalidade{ get; set; }
     }
 }
