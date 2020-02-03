@@ -1,5 +1,8 @@
 ﻿using FS.Comum.Repositorios.Interfaces;
 using FS.MinhaApi.AcessoDados.Entity.Context;
+using FS.MinhaApi.Api.AutoMapper;
+using FS.MinhaApi.Api.DTOs;
+using FS.MinhaApi.Api.Filters;
 using FS.MinhaApi.Dominio;
 using FS.MinhaApi.Repositorios.Entity;
 using System;
@@ -18,8 +21,9 @@ namespace FS.MinhaApi.Api.Controllers
 
         public IHttpActionResult Get()
         {
-            return Ok(_repositorioAlunos.Selecionar()); //Responde 200
-            
+            List<Aluno> alunos = _repositorioAlunos.Selecionar();
+            List<AlunoDTO> dtos = AutoMapperManager.Instance.Mapper.Map<List<Aluno>, List<AlunoDTO>>(alunos);
+            return Ok(dtos); //Responde 200
         }
 
         public IHttpActionResult Get (int? id)
@@ -33,13 +37,16 @@ namespace FS.MinhaApi.Api.Controllers
             {
                 return NotFound(); //Responde 404
             }
-            return Content(HttpStatusCode.Found, aluno); //Responde 302 (OK)
+            AlunoDTO dto = AutoMapperManager.Instance.Mapper.Map<Aluno,AlunoDTO>(aluno);
+            return Content(HttpStatusCode.Found, dto); //Responde 302 (OK)
         }
 
-        public IHttpActionResult Post([FromBody]Aluno aluno)
+        [ApplyModelValidation]
+        public IHttpActionResult Post([FromBody]AlunoDTO dto)
         {
             try
             {
+                Aluno aluno = AutoMapperManager.Instance.Mapper.Map<AlunoDTO, Aluno>(dto);
                 _repositorioAlunos.Inserir(aluno);
                 return Created($"{Request.RequestUri}/{aluno.Id}",aluno); //Responde 201 (Criado)
             }
@@ -47,10 +54,10 @@ namespace FS.MinhaApi.Api.Controllers
             {
                 return InternalServerError(ex); //Responde 500 (Internal Server Error)
             }
-
         }
 
-        public IHttpActionResult Put(int? id, [FromBody]Aluno aluno)
+        [ApplyModelValidation]
+        public IHttpActionResult Put(int? id, [FromBody]AlunoDTO dto)
         {
             try
             {
@@ -58,6 +65,7 @@ namespace FS.MinhaApi.Api.Controllers
                 {
                     return BadRequest(); // Responde 502
                 }
+                Aluno aluno = AutoMapperManager.Instance.Mapper.Map<AlunoDTO, Aluno>(dto);
                 aluno.Id = id.Value;
                 _repositorioAlunos.Atualizar(aluno);
                 return Ok(); //Responde 200
