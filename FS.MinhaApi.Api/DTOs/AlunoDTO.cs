@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FS.MinhaApi.Api.HATEOAS;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -6,7 +7,7 @@ using System.Web;
 
 namespace FS.MinhaApi.Api.DTOs
 {
-    public class AlunoDTO
+    public class AlunoDTO : RestResource
     {
         public int Id { get; set; }
 
