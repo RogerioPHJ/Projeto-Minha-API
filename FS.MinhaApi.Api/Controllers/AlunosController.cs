@@ -49,5 +49,45 @@ namespace FS.MinhaApi.Api.Controllers
             }
 
         }
+
+        public IHttpActionResult Put(int? id, [FromBody]Aluno aluno)
+        {
+            try
+            {
+                if (!id.HasValue)
+                {
+                    return BadRequest(); // Responde 502
+                }
+                aluno.Id = id.Value;
+                _repositorioAlunos.Atualizar(aluno);
+                return Ok(); //Responde 200
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex); //Responde 500 (Internal Server Error)
+            }
+        }
+
+        public IHttpActionResult Delete(int? id)
+        {
+            try
+            {
+                if (!id.HasValue)
+                {
+                    return BadRequest(); // Responde 502
+                }
+                Aluno aluno = _repositorioAlunos.SelecionarPorId(id.Value);
+                if(aluno == null)
+                {
+                    return NotFound();
+                }
+                _repositorioAlunos.ExcluirPorId(id.Value);
+                return Ok(); //Responde 200
+            }
+            catch(Exception ex)
+            {
+                return InternalServerError(ex); //Responde 500 (Internal Server Error)
+            }
+        }
     }
 }
