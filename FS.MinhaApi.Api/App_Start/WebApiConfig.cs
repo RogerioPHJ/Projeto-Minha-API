@@ -23,7 +23,7 @@ namespace FS.MinhaApi.Api
 
             config.Formatters.Add(new CsvMediaTypeFormatter());
 
-            config.Filters.Add(new FillResponseWithHATEOASAttribute())
+            config.Filters.Add(new FillResponseWithHATEOASAttribute());
 
             // Rotas da API da Web
             config.MapHttpAttributeRoutes();
