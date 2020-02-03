@@ -16,36 +16,38 @@ namespace FS.MinhaApi.Api.Controllers
         private IRepositorioFS<Aluno, int> _repositorioAlunos
             = new RepositorioAlunos(new MinhaApiDbContext());
 
-        public IEnumerable<Aluno> Get()
+        public IHttpActionResult Get()
         {
-            return _repositorioAlunos.Selecionar();
+            return Ok(_repositorioAlunos.Selecionar()); //Responde 200
+            
         }
 
-        public HttpResponseMessage Get (int? id)
+        public IHttpActionResult Get (int? id)
         {
             if (!id.HasValue)
             {
-                return Request.CreateResponse(HttpStatusCode.BadRequest); // Responde 502
+                return BadRequest(); // Responde 502
             }
             Aluno aluno = _repositorioAlunos.SelecionarPorId(id.Value);
             if(aluno == null)
             {
-                return Request.CreateResponse(HttpStatusCode.NotFound); //Responde 404
+                return NotFound(); //Responde 404
             }
-            return Request.CreateResponse(HttpStatusCode.Found, aluno); //Responde 302 (OK)
+            return Content(HttpStatusCode.Found, aluno); //Responde 302 (OK)
         }
 
-        public HttpResponseMessage Post([FromBody]Aluno aluno)
+        public IHttpActionResult Post([FromBody]Aluno aluno)
         {
             try
             {
                 _repositorioAlunos.Inserir(aluno);
-                return Request.CreateResponse(HttpStatusCode.Created);
+                return Created($"{Request.RequestUri}/{aluno.Id}",aluno); //Responde 201 (Criado)
             }
             catch (Exception ex)
             {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+                return InternalServerError(ex); //Responde 500 (Internal Server Error)
             }
+
         }
     }
 }
